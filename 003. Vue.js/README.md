@@ -95,3 +95,188 @@ Vue CLI v3.4.0
 > 와! 드디어!
 
 이런 창이 뜨면 일단 성공입니다. 이제 Vue 프로젝트의 구조랑 문법을 다뤄볼게요.
+
+## 4. Vue 파일 살펴보기: 컴포넌트란?
+먼저 `src/` 폴더 안의 `App.vue` 파일을 살펴봅시다.
+
+```html
+<template>
+  <div id="app">
+    <img alt="Vue logo" src="./assets/logo.png">
+    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  </div>
+</template>
+
+<script>
+import HelloWorld from './components/HelloWorld.vue'
+
+export default {
+  name: 'app',
+  components: {
+    HelloWorld
+  }
+}
+</script>
+```
+
+기본적인 HTML 지식이 있다면 위 코드를 쉽게 이해할 수 있을 거예요.
+
+- 먼저 `script` 부분이 먼저 실행됩니다.
+  - `./components/HelloWorld.vue`에서 `HelloWorld` 컴포넌트를 가져와 등록합니다.
+- `template`는 실제로 렌더링되는 부분입니다.
+  - `img` 태그로 `./assets/logo.png`의 로고를 보여줍니다.
+  - `HelloWorld` 컴포넌트를 불러오고, prop인 `msg`로 문자열 `Welcome to Your Vue.js App`를 전달합니다.
+
+### 컴포넌트의 prop
+그렇다면 주어진 경로로 가서 `HelloWorld.vue` 파일을 살펴볼까요?
+
+```html
+<template>
+  <div class="hello">
+    <h1>{{ msg }}</h1>
+    <p>이하 생략...</p>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'HelloWorld',
+  props: {
+    msg: String
+  }
+}
+</script>
+```
+
+**prop** 은 Vue 컴포넌트가 부모 컴포넌트(자신을 사용하는 템플릿의 컴포넌트)에게 전달받는 값입니다.
+
+- `props`를 통해 `HelloWorld` 컴포넌트가 부모 컴포넌트로부터 String(문자열) 타입의 `msg`라는 데이터를 받아온다는 것을 알 수 있습니다.
+- 템플릿에서는 `{{ msg }}`로 `msg` 값을 출력합니다. 중괄호로 값을 감싸는 이 태그 문법은 **JSX 문법** 이라고 합니다.
+
+#### prop의 타입
+잠깐, String 타입의 prop을 받는다고 정의했다면, 다른 타입도 있는 걸까요?
+
+맞아요! prop은 문자열 외에도 모든 자바스크립트의 데이터 타입이 될 수 있어요.
+
+```html
+<!-- some component -->
+<script>
+export default {
+  name: 'Test',
+  props: {
+    num: {
+      type: Number
+    }
+  }
+}
+</script>
+
+<template>
+  <div class="test">
+    {{ num * 5}}
+  </div>
+</template>
+
+<!-- some parent component -->
+<test :num="500" />
+
+<!-- result -->
+2500
+```
+
+이때 `Number`, `Object`, `Boolean`, `Function` 등등이 될 수 있답니다.
+
+단, `String`이 아닌 타입의 prop을 전달할 때는 아래처럼 `v-bind` 디렉티브를 사용하거나 그 약어로 `:`를 prop 이름 앞에 붙여 줘야 한답니다.
+
+```html
+<!-- Boolean type data를 전달 -->
+<test v-bind:data="true" />
+<test :data="true" />
+```
+
+### 컴포넌트를 사용하는 이유
+대체 컴포넌트를 왜 사용하는 것일까요?
+
+**컴포넌트** 는 `a`, `p`, `div` 같은 기존의 HTML 엘리먼트를 확장하여 재사용 가능한 코드를 쓸 수 있게 해 줍니다.
+
+예를 들어서 아래와 같은 HTML이 있다고 생각해 봅시다.
+
+```html
+<div class="list">
+  <div class="item">
+    <div class="profile">
+      <span class="name">오준서</span>
+      <span class="comment">안녕 난 오준서!</span>
+    </div>
+  </div>
+  <div class="item">
+    <div class="profile">
+      <span class="name">심재성</span>
+      <span class="comment">안녕 난 심재성!</span>
+    </div>
+  </div>
+  <div class="item">
+    <div class="profile">
+      <span class="name">장종우</span>
+      <span class="comment">안녕 난 장종우!</span>
+    </div>
+  </div>
+</div>
+```
+
+잘 살펴보면 `item` 클래스를 가진 같은 `div` 코드가 이름과 인사말만 바뀐 채 계속 반복된다는 것을 알 수 있습니다. 
+들여쓰기 덕분에 알아보기는 어렵지 않지만, 정작 이들이 차별화되는 중요한 데이터(이름과 인사말)는 눈에 잘 띄지 않고, 약간 어지럽기도 하네요.
+
+그리고 이런 코드 중복이 그리 효율적인 것 같지는 것 같죠?
+
+```html
+<!-- ./components/Item.vue -->
+<script>
+export default {
+  name: 'Item',
+  props: {
+    name: {
+      type: String,
+      default: '이름 없음'
+    },
+    comment: {
+      type: String,
+      default: '인사말 없음'
+    }
+  }
+}
+</script>
+
+<template>
+  <div class="item">
+    <div class="profile">
+      <span class="name">{{ name }}</span>
+      <span class="comment">{{ comment }}</span>
+    </div>
+  </div>
+</template>
+
+<!-- App.vue -->
+<script>
+import Item from './components/Item.vue'
+
+export default {
+  components: {
+    Item
+  }
+}
+</script>
+
+<template>
+  <div class="list">
+    <item name="오준서" comment="안녕 난 오준서!" />
+    <item name="심재성" comment="안녕 난 심재성!" />
+    <item name="장종우" comment="안녕 난 장종우!" />
+  </div>
+</template>
+```
+> ~~그냥 v-for를 씁시다~~ ~~이건 나중에 말씀드릴게요~~
+> 
+이처럼 컴포넌트를 사용하면 가독성 문제도 해결할 수 있고, 코드 중복도 줄일 수 있답니다.
+
+앗, 그리고 눈치챘겠지만 컴포넌트 역시 `App.vue` 같은 구조를 가지는 **Vue 인스턴스** 랍니다!
