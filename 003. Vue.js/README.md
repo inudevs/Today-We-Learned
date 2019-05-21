@@ -184,7 +184,7 @@ export default {
 2500
 ```
 
-이때 `Number`, `Object`, `Boolean`, `Function` 등등이 될 수 있답니다.
+그러니까, 위에 나온 `Number` 말고도 `Boolean`, `Object`, `Function` 등등이 될 수 있답니다.
 
 단, `String`이 아닌 타입의 prop을 전달할 때는 아래처럼 `v-bind` 디렉티브를 사용하거나 그 약어로 `:`를 prop 이름 앞에 붙여 줘야 한답니다.
 
