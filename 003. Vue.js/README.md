@@ -90,7 +90,8 @@ Vue CLI v3.4.0
 
 `npm run serve`를 실행하면 위처럼 로컬 서버가 돌아갈 거예요. [http://localhost:8080/](http://localhost:8080/)로 가주세요.
 
-![hello-vue](./images/hello-vue.png)
+<img alt="hello-vue" src="./images/hello-vue.png" width="80%">
+
 > 와! 드디어!
 
 이런 창이 뜨면 일단 성공입니다. 이제 Vue 프로젝트의 구조랑 문법을 다뤄볼게요.
